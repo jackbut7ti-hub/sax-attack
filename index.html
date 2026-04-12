@@ -3,121 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sax Attack</title>
+    <title>Sax Attack – Boka tid</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f4f4f4;
-        }
-        header {
-            background: #222;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        header img {
-            width: 180px;
-            height: auto;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        .container {
-            width: 90%;
-            max-width: 900px;
-            margin: auto;
-            padding: 20px;
-            background: white;
-            margin-top: 20px;
-            border-radius: 8px;
-        }
-        h2 {
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 5px;
-        }
-        .price-list li {
-            margin: 8px 0;
-        }
-        .timeslot {
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 6px;
-            font-weight: bold;
-            text-align: center;
-        }
-        .full {
-            background: #ffb3b3;
-            color: #700;
-            cursor: not-allowed;
-        }
-        .free {
-            background: #b3ffb3;
-            color: #064d00;
-        }
-        .free a {
-            text-decoration: none;
-            color: #064d00;
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-        .book-box {
-            background: #e8e8e8;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
+        header { background: #111; color: white; padding: 20px; text-align: center; }
+        .container { width: 90%; max-width: 600px; margin: 30px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; }
+        .time-btn { display: block; width: 100%; padding: 12px; margin: 8px 0; background: #c62828; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
+        .time-btn:hover { background: #a71f1f; }
+        form { margin-top: 20px; display: none; }
+        input, textarea { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; }
+        button[type="submit"] { background: #111; color: white; padding: 12px; border: none; border-radius: 6px; cursor: pointer; width: 100%; }
+        button[type="submit"]:hover { background: #333; }
+        footer { text-align: center; padding: 20px; color: #555; }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="DIN-BILD.png" alt="Sax Attack Logga">
-    <h1>Sax Attack</h1>
-    <p>Din lokala frisör – kvalitet, stil och precision</p>
+    <h1>Sax Attack – Boka tid</h1>
 </header>
 
 <div class="container">
-    <h2>Priser</h2>
-    <ul class="price-list">
-        <li><strong>Vanlig klippning:</strong> 250 kr</li>
-        <li><strong>Skäggtrimning:</strong> 150 kr</li>
-        <li><strong>Barnklippning:</strong> 150 kr</li>
-        <li><strong>Klippning + Skägg Combo:</strong> 400 kr</li>
-    </ul>
+    <h2>Välj en tid</h2>
 
-    <h2>Boka tid</h2>
-    <p>Öppettider: <strong>08:00 – 16:00</strong></p>
+    <button class="time-btn" onclick="selectTime('09:00')">09:00</button>
+    <button class="time-btn" onclick="selectTime('10:00')">10:00</button>
+    <button class="time-btn" onclick="selectTime('11:00')">11:00</button>
+    <button class="time-btn" onclick="selectTime('13:00')">13:00</button>
+    <button class="time-btn" onclick="selectTime('14:00')">14:00</button>
+    <button class="time-btn" onclick="selectTime('15:00')">15:00</button>
 
-    <div class="timeslot full">08:00 – 08:30 • Fullbokat</div>
+    <form id="bookingForm" action="https://formspree.io/f/meevjzwj" method="POST">
+        <h3>Fyll i dina uppgifter</h3>
 
-    <div class="timeslot free">
-        <a href="mailto:jackbut7ti@gmail.com?subject=Bokning%2009:00–09:30&body=Hej!%20Jag%20vill%20boka%20tiden%2009:00–09:30.">
-            09:00 – 09:30 • Klicka för att boka
-        </a>
-    </div>
+        <input type="text" name="namn" placeholder="Ditt namn" required>
+        <input type="text" name="telefon" placeholder="Telefonnummer" required>
+        <textarea name="meddelande" placeholder="Meddelande (valfritt)"></textarea>
 
-    <div class="timeslot full">10:00 – 10:30 • Fullbokat</div>
-    <div class="timeslot full">11:00 – 11:30 • Fullbokat</div>
-    <div class="timeslot full">12:00 – 12:30 • Fullbokat</div>
+        <input type="hidden" name="vald_tid" id="selectedTime">
 
-    <div class="timeslot free">
-        <a href="mailto:jackbut7ti@gmail.com?subject=Bokning%2013:00–13:30&body=Hej!%20Jag%20vill%20boka%20tiden%2013:00–13:30.">
-            13:00 – 13:30 • Klicka för att boka
-        </a>
-    </div>
-
-    <div class="timeslot full">14:00 – 14:30 • Fullbokat</div>
-    <div class="timeslot full">15:00 – 15:30 • Fullbokat</div>
-
-    <div class="book-box">
-        <h3>Efter bokning</h3>
-        <p>När administratören har godkänt bokningen måste du ringa:</p>
-        <p style="font-size: 1.4em; font-weight: bold;">📞 073 669 97 52</p>
-    </div>
+        <button type="submit">Skicka bokning</button>
+    </form>
 </div>
+
+<footer>
+    © 2026 Sax Attack – Alla rättigheter reserverade
+</footer>
+
+<script>
+function selectTime(time) {
+    document.getElementById("selectedTime").value = time;
+    document.getElementById("bookingForm").style.display = "block";
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+</script>
 
 </body>
 </html>
-<img src="logga.png" alt="Sax Attack Logga">
