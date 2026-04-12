@@ -62,9 +62,10 @@
             padding: 8px 12px;
             margin: 5px;
             border-radius: 5px;
+            cursor: pointer;
         }
         .free { background: #4CAF50; color: white; }
-        .taken { background: #E53935; color: white; }
+        .taken { background: #E53935; color: white; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -80,37 +81,29 @@
         <p>💈 Klippning + Skägg: <b>350 kr</b></p>
     </div>
 
-   <h2>Tider</h2>
-<div class="times">
-    <!-- Lediga tider -->
-    <span class="free" onclick="selectTime('09:00')">09:00</span>
-    <span class="free" onclick="selectTime('09:30')">09:30</span>
+    <h2>Tider</h2>
+    <div class="times">
+        <!-- Lediga -->
+        <span class="free" onclick="selectTime('09:00')">09:00</span>
+        <span class="free" onclick="selectTime('09:30')">09:30</span>
 
-    <!-- Upptagna tider -->
-    <span class="taken">10:00</span>
-    <span class="taken">10:30</span>
-    <span class="taken">11:00</span>
-    <span class="taken">11:30</span>
-    <span class="taken">12:00</span>
-    <span class="taken">12:30</span>
+        <!-- Upptagna -->
+        <span class="taken">10:00</span>
+        <span class="taken">10:30</span>
+        <span class="taken">11:00</span>
+        <span class="taken">11:30</span>
+        <span class="taken">12:00</span>
+        <span class="taken">12:30</span>
 
-    <!-- Lediga tider -->
-    <span class="free" onclick="selectTime('13:00')">13:00</span>
-    <span class="free" onclick="selectTime('13:30')">13:30</span>
+        <!-- Lediga -->
+        <span class="free" onclick="selectTime('13:00')">13:00</span>
+        <span class="free" onclick="selectTime('13:30')">13:30</span>
 
-    <!-- Upptagna tider -->
-    <span class="taken">14:00</span>
-    <span class="taken">14:30</span>
-    <span class="taken">15:00</span>
-    <span class="taken">15:30</span>
-</div>
-
-<script>
-function selectTime(time) {
-    document.getElementById("timeInput").value = time;
-}
-</script>
-
+        <!-- Upptagna -->
+        <span class="taken">14:00</span>
+        <span class="taken">14:30</span>
+        <span class="taken">15:00</span>
+        <span class="taken">15:30</span>
     </div>
 
     <h2>Boka tid</h2>
@@ -128,10 +121,19 @@ function selectTime(time) {
         <label>Meddelande / önskemål</label>
         <textarea name="message" required></textarea>
 
+        <label>Vald tid</label>
+        <input type="text" id="timeInput" name="time" readonly required>
+
         <button type="submit">Skicka bokning</button>
     </form>
 
 </div>
+
+<script>
+function selectTime(time) {
+    document.getElementById("timeInput").value = time;
+}
+</script>
 
 </body>
 </html>
