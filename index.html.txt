@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sax Attack</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+        }
+        header {
+            background: #222;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        header img {
+            width: 180px;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        h2 {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .price-list li {
+            margin: 8px 0;
+        }
+        .timeslot {
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .full {
+            background: #ffb3b3;
+            color: #700;
+            cursor: not-allowed;
+        }
+        .free {
+            background: #b3ffb3;
+            color: #064d00;
+        }
+        .free a {
+            text-decoration: none;
+            color: #064d00;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .book-box {
+            background: #e8e8e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="DIN-BILD.png" alt="Sax Attack Logga">
+    <h1>Sax Attack</h1>
+    <p>Din lokala frisör – kvalitet, stil och precision</p>
+</header>
+
+<div class="container">
+    <h2>Priser</h2>
+    <ul class="price-list">
+        <li><strong>Vanlig klippning:</strong> 250 kr</li>
+        <li><strong>Skäggtrimning:</strong> 150 kr</li>
+        <li><strong>Barnklippning:</strong> 150 kr</li>
+        <li><strong>Klippning + Skägg Combo:</strong> 400 kr</li>
+    </ul>
+
+    <h2>Boka tid</h2>
+    <p>Öppettider: <strong>08:00 – 16:00</strong></p>
+
+    <div class="timeslot full">08:00 – 08:30 • Fullbokat</div>
+
+    <div class="timeslot free">
+        <a href="mailto:jackbut7ti@gmail.com?subject=Bokning%2009:00–09:30&body=Hej!%20Jag%20vill%20boka%20tiden%2009:00–09:30.">
+            09:00 – 09:30 • Klicka för att boka
+        </a>
+    </div>
+
+    <div class="timeslot full">10:00 – 10:30 • Fullbokat</div>
+    <div class="timeslot full">11:00 – 11:30 • Fullbokat</div>
+    <div class="timeslot full">12:00 – 12:30 • Fullbokat</div>
+
+    <div class="timeslot free">
+        <a href="mailto:jackbut7ti@gmail.com?subject=Bokning%2013:00–13:30&body=Hej!%20Jag%20vill%20boka%20tiden%2013:00–13:30.">
+            13:00 – 13:30 • Klicka för att boka
+        </a>
+    </div>
+
+    <div class="timeslot full">14:00 – 14:30 • Fullbokat</div>
+    <div class="timeslot full">15:00 – 15:30 • Fullbokat</div>
+
+    <div class="book-box">
+        <h3>Efter bokning</h3>
+        <p>När administratören har godkänt bokningen måste du ringa:</p>
+        <p style="font-size: 1.4em; font-weight: bold;">📞 073 669 97 52</p>
+    </div>
+</div>
+
+</body>
+</html>
+<img src="logga.png" alt="Sax Attack Logga">
