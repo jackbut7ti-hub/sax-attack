@@ -80,14 +80,37 @@
         <p>💈 Klippning + Skägg: <b>350 kr</b></p>
     </div>
 
-    <h2>Tider</h2>
-    <div class="times">
-        <span class="free">10:00</span>
-        <span class="taken">11:00</span>
-        <span class="free">12:00</span>
-        <span class="taken">13:00</span>
-        <span class="free">14:00</span>
-        <span class="taken">15:00</span>
+   <h2>Tider</h2>
+<div class="times">
+    <!-- Lediga tider -->
+    <span class="free" onclick="selectTime('09:00')">09:00</span>
+    <span class="free" onclick="selectTime('09:30')">09:30</span>
+
+    <!-- Upptagna tider -->
+    <span class="taken">10:00</span>
+    <span class="taken">10:30</span>
+    <span class="taken">11:00</span>
+    <span class="taken">11:30</span>
+    <span class="taken">12:00</span>
+    <span class="taken">12:30</span>
+
+    <!-- Lediga tider -->
+    <span class="free" onclick="selectTime('13:00')">13:00</span>
+    <span class="free" onclick="selectTime('13:30')">13:30</span>
+
+    <!-- Upptagna tider -->
+    <span class="taken">14:00</span>
+    <span class="taken">14:30</span>
+    <span class="taken">15:00</span>
+    <span class="taken">15:30</span>
+</div>
+
+<script>
+function selectTime(time) {
+    document.getElementById("timeInput").value = time;
+}
+</script>
+
     </div>
 
     <h2>Boka tid</h2>
