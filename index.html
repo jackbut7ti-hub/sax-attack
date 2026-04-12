@@ -1,26 +1,114 @@
-<form action="https://formspree.io/f/mlgarppj" method="POST">
-  
-  <label>
-    Namn:
-    <input type="text" name="name" required>
-  </label>
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sax Attack – Boka tid</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: black;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 28px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 15px;
+            background: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .prices, .times {
+            margin-top: 20px;
+            padding: 15px;
+            background: #eee;
+            border-radius: 8px;
+        }
+        .times span {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 5px;
+            border-radius: 5px;
+        }
+        .free { background: #4CAF50; color: white; }
+        .taken { background: #E53935; color: white; }
+    </style>
+</head>
+<body>
 
-  <label>
-    Telefonnummer:
-    <input type="tel" name="phone" required>
-  </label>
+<header>Sax Attack – Boka tid</header>
 
-  <label>
-    Email:
-    <input type="email" name="email" required>
-  </label>
+<div class="container">
 
-  <label>
-    Meddelande / önskemål:
-    <textarea name="message" required></textarea>
-  </label>
+    <h2>Priser</h2>
+    <div class="prices">
+        <p>✂️ Klippning: <b>250 kr</b></p>
+        <p>🧔 Skägg: <b>150 kr</b></p>
+        <p>💈 Klippning + Skägg: <b>350 kr</b></p>
+    </div>
 
-  <button type="submit">Boka tid</button>
+    <h2>Tider</h2>
+    <div class="times">
+        <span class="free">10:00</span>
+        <span class="taken">11:00</span>
+        <span class="free">12:00</span>
+        <span class="taken">13:00</span>
+        <span class="free">14:00</span>
+        <span class="taken">15:00</span>
+    </div>
 
-</form>
+    <h2>Boka tid</h2>
+    <form action="https://formspree.io/f/mlgarppj" method="POST">
 
+        <label>Namn</label>
+        <input type="text" name="name" required>
+
+        <label>Telefonnummer</label>
+        <input type="tel" name="phone" required>
+
+        <label>Email</label>
+        <input type="email" name="email" required>
+
+        <label>Meddelande / önskemål</label>
+        <textarea name="message" required></textarea>
+
+        <button type="submit">Skicka bokning</button>
+    </form>
+
+</div>
+
+</body>
+</html>
