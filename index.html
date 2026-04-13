@@ -80,12 +80,10 @@
     <input type="date" id="datePicker" required>
 
     <h2>Välj tid</h2>
-    <div class="times">
-        <!-- Lediga -->
+    <div class="times" id="timeSlots">
         <span class="free" onclick="selectTime('09:00')">09:00</span>
         <span class="free" onclick="selectTime('09:30')">09:30</span>
 
-        <!-- Upptagna -->
         <span class="taken">10:00</span>
         <span class="taken">10:30</span>
         <span class="taken">11:00</span>
@@ -93,11 +91,9 @@
         <span class="taken">12:00</span>
         <span class="taken">12:30</span>
 
-        <!-- Lediga -->
         <span class="free" onclick="selectTime('13:00')">13:00</span>
         <span class="free" onclick="selectTime('13:30')">13:30</span>
 
-        <!-- Upptagna -->
         <span class="taken">14:00</span>
         <span class="taken">14:30</span>
         <span class="taken">15:00</span>
@@ -105,7 +101,7 @@
     </div>
 
     <h2>Boka tid</h2>
-    <form action="https://formspree.io/f/mlgarppj" method="POST">
+    <form action="https://formspree.io/f/mlgarppj" method="POST" onsubmit="saveBooking()">
 
         <label>Namn</label>
         <input type="text" name="name" required>
@@ -131,21 +127,73 @@
 </div>
 
 <script>
-document.getElementById("datePicker").addEventListener("change", function() {
+// Stoppa gamla datum
+const datePicker = document.getElementById("datePicker");
+const today = new Date().toISOString().split("T")[0];
+datePicker.min = today;
+
+// Ladda bokningar från LocalStorage
+let bookedSlots = JSON.parse(localStorage.getItem("bookedSlots")) || [];
+
+// Markera redan bokade tider
+function updateBookedTimes() {
+    const date = datePicker.value;
+    const allTimes = document.querySelectorAll(".times span");
+
+    allTimes.forEach(t => {
+        const time = t.textContent;
+        const slotId = `${date}-${time}`;
+
+        if (bookedSlots.includes(slotId)) {
+            t.classList.remove("free");
+            t.classList.add("taken");
+            t.onclick = null;
+        }
+    });
+}
+
+// När datum ändras
+datePicker.addEventListener("change", function () {
     document.getElementById("selectedDate").value = this.value;
+    updateBookedTimes();
 });
 
+// Välj tid
 function selectTime(time) {
+    const date = datePicker.value;
+
+    if (!date) {
+        alert("Välj ett datum först.");
+        return;
+    }
+
+    const slotId = `${date}-${time}`;
+
+    if (bookedSlots.includes(slotId)) {
+        alert("Den här tiden är redan bokad.");
+        return;
+    }
+
     document.getElementById("timeInput").value = time;
 
     const allTimes = document.querySelectorAll('.times span');
     allTimes.forEach(t => t.classList.remove("selected"));
 
     const selected = Array.from(allTimes).find(t => t.textContent === time);
-    if (selected) {
-        selected.classList.add("selected");
-    }
+    if (selected) selected.classList.add("selected");
 }
+
+// Spara bokning i LocalStorage
+function saveBooking() {
+    const date = document.getElementById("selectedDate").value;
+    const time = document.getElementById("timeInput").value;
+
+    const slotId = `${date}-${time}`;
+    bookedSlots.push(slotId);
+
+    localStorage.setItem("bookedSlots", JSON.stringify(bookedSlots));
+}
+
 </script>
 
 </body>
