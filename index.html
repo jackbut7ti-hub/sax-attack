@@ -33,7 +33,7 @@
             margin-top: 15px;
             font-weight: bold;
         }
-        input, textarea, select {
+        input, textarea {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -68,6 +68,36 @@
         .free { background: #4CAF50; color: white; }
         .taken { background: #E53935; color: white; cursor: not-allowed; }
         .selected { outline: 3px solid #1b5e20; }
+
+        /* Adminpanel */
+        .admin-container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            font-size: 14px;
+        }
+        th {
+            background: #f0f0f0;
+        }
+        .badge {
+            padding: 3px 7px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: white;
+        }
+        .badge-active { background: #4CAF50; }
+        .badge-cancelled { background: #E53935; }
     </style>
 </head>
 <body>
@@ -81,36 +111,20 @@
 
     <h2>Välj tid</h2>
     <div class="times" id="timeSlots">
-        <span class="free" onclick="selectTime('09:00')">09:00</span>
-        <span class="free" onclick="selectTime('09:30')">09:30</span>
-
-        <span class="taken">10:00</span>
-        <span class="taken">10:30</span>
-        <span class="taken">11:00</span>
-        <span class="taken">11:30</span>
-        <span class="taken">12:00</span>
-        <span class="taken">12:30</span>
-
-        <span class="free" onclick="selectTime('13:00')">13:00</span>
-        <span class="free" onclick="selectTime('13:30')">13:30</span>
-
-        <span class="taken">14:00</span>
-        <span class="taken">14:30</span>
-        <span class="taken">15:00</span>
-        <span class="taken">15:30</span>
+        <!-- Tider genereras automatiskt via JavaScript -->
     </div>
 
     <h2>Boka tid</h2>
-    <form action="https://formspree.io/f/mlgarppj" method="POST" onsubmit="saveBooking()">
+    <form action="https://formspree.io/f/mlgarppj" method="POST" onsubmit="return handleSubmit()">
 
         <label>Namn</label>
-        <input type="text" name="name" required>
+        <input type="text" name="name" id="nameInput" required>
 
         <label>Telefonnummer</label>
-        <input type="tel" name="phone" required>
+        <input type="tel" name="phone" id="phoneInput" required>
 
         <label>Email</label>
-        <input type="email" name="email" required>
+        <input type="email" name="email" id="emailInput" required>
 
         <label>Valt datum</label>
         <input type="text" id="selectedDate" name="date" readonly required>
@@ -119,81 +133,230 @@
         <input type="text" id="timeInput" name="time" readonly required>
 
         <label>Meddelande / önskemål</label>
-        <textarea name="message" required></textarea>
+        <textarea name="message" id="messageInput" required></textarea>
 
         <button type="submit">Skicka bokning</button>
     </form>
 
 </div>
 
+<!-- ADMINPANEL -->
+<div class="admin-container">
+    <h2>Admin – Bokningar</h2>
+    <p>Här ser du alla bokningar som sparats i webbläsaren (LocalStorage).</p>
+    <div id="adminPanel"></div>
+</div>
+
 <script>
-// Stoppa gamla datum
-const datePicker = document.getElementById("datePicker");
-const today = new Date().toISOString().split("T")[0];
-datePicker.min = today;
+    const datePicker = document.getElementById("datePicker");
+    const selectedDateInput = document.getElementById("selectedDate");
+    const timeInput = document.getElementById("timeInput");
+    const timeSlotsContainer = document.getElementById("timeSlots");
 
-// Ladda bokningar från LocalStorage
-let bookedSlots = JSON.parse(localStorage.getItem("bookedSlots")) || [];
+    // Stoppa gamla datum
+    const today = new Date().toISOString().split("T")[0];
+    datePicker.min = today;
 
-// Markera redan bokade tider
-function updateBookedTimes() {
-    const date = datePicker.value;
-    const allTimes = document.querySelectorAll(".times span");
+    // Bokningar i LocalStorage
+    let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
 
-    allTimes.forEach(t => {
-        const time = t.textContent;
-        const slotId = `${date}-${time}`;
+    // Generera tider automatiskt (09:00–15:30, var 30:e minut)
+    function generateTimeSlots() {
+        timeSlotsContainer.innerHTML = "";
+        const startHour = 9;
+        const endHour = 15;
+        const minutesStep = 30;
 
-        if (bookedSlots.includes(slotId)) {
-            t.classList.remove("free");
-            t.classList.add("taken");
-            t.onclick = null;
+        for (let hour = startHour; hour <= endHour; hour++) {
+            for (let min = 0; min < 60; min += minutesStep) {
+                const h = hour.toString().padStart(2, "0");
+                const m = min.toString().padStart(2, "0");
+                const timeStr = `${h}:${m}`;
+
+                const span = document.createElement("span");
+                span.textContent = timeStr;
+                span.classList.add("free");
+                span.onclick = () => selectTime(timeStr);
+
+                timeSlotsContainer.appendChild(span);
+            }
         }
+    }
+
+    // Uppdatera tider som är bokade för valt datum
+    function updateBookedTimes() {
+        const date = datePicker.value;
+        const allTimes = document.querySelectorAll("#timeSlots span");
+
+        allTimes.forEach(t => {
+            t.classList.remove("taken", "selected");
+            t.classList.add("free");
+            t.onclick = () => selectTime(t.textContent);
+        });
+
+        if (!date) return;
+
+        const activeBookings = bookings.filter(b => !b.cancelled && b.date === date);
+
+        activeBookings.forEach(b => {
+            const span = Array.from(allTimes).find(t => t.textContent === b.time);
+            if (span) {
+                span.classList.remove("free");
+                span.classList.add("taken");
+                span.onclick = null;
+            }
+        });
+    }
+
+    // När datum ändras
+    datePicker.addEventListener("change", function () {
+        selectedDateInput.value = this.value;
+        updateBookedTimes();
     });
-}
 
-// När datum ändras
-datePicker.addEventListener("change", function () {
-    document.getElementById("selectedDate").value = this.value;
-    updateBookedTimes();
-});
+    // Välj tid
+    function selectTime(time) {
+        const date = datePicker.value;
 
-// Välj tid
-function selectTime(time) {
-    const date = datePicker.value;
+        if (!date) {
+            alert("Välj ett datum först.");
+            return;
+        }
 
-    if (!date) {
-        alert("Välj ett datum först.");
-        return;
+        const slotTaken = bookings.some(b => !b.cancelled && b.date === date && b.time === time);
+        if (slotTaken) {
+            alert("Den här tiden är redan bokad.");
+            return;
+        }
+
+        timeInput.value = time;
+
+        const allTimes = document.querySelectorAll('#timeSlots span');
+        allTimes.forEach(t => t.classList.remove("selected"));
+
+        const selected = Array.from(allTimes).find(t => t.textContent === time);
+        if (selected) selected.classList.add("selected");
     }
 
-    const slotId = `${date}-${time}`;
+    // Spara bokning + låt Formspree skicka mail
+    function handleSubmit() {
+        const date = selectedDateInput.value;
+        const time = timeInput.value;
+        const name = document.getElementById("nameInput").value;
+        const phone = document.getElementById("phoneInput").value;
+        const email = document.getElementById("emailInput").value;
+        const message = document.getElementById("messageInput").value;
 
-    if (bookedSlots.includes(slotId)) {
-        alert("Den här tiden är redan bokad.");
-        return;
+        if (!date || !time) {
+            alert("Välj datum och tid innan du bokar.");
+            return false;
+        }
+
+        const slotTaken = bookings.some(b => !b.cancelled && b.date === date && b.time === time);
+        if (slotTaken) {
+            alert("Den här tiden är redan bokad.");
+            return false;
+        }
+
+        const booking = {
+            date,
+            time,
+            name,
+            phone,
+            email,
+            message,
+            createdAt: new Date().toISOString(),
+            cancelled: false
+        };
+
+        bookings.push(booking);
+        localStorage.setItem("bookings", JSON.stringify(bookings));
+
+        updateBookedTimes();
+        renderAdminPanel();
+
+        // Låt formuläret gå vidare till Formspree (return true)
+        return true;
     }
 
-    document.getElementById("timeInput").value = time;
+    // Adminpanel – visa bokningar
+    function renderAdminPanel() {
+        const container = document.getElementById("adminPanel");
 
-    const allTimes = document.querySelectorAll('.times span');
-    allTimes.forEach(t => t.classList.remove("selected"));
+        if (bookings.length === 0) {
+            container.innerHTML = "<p>Inga bokningar sparade ännu.</p>";
+            return;
+        }
 
-    const selected = Array.from(allTimes).find(t => t.textContent === time);
-    if (selected) selected.classList.add("selected");
-}
+        let html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>Tid</th>
+                        <th>Namn</th>
+                        <th>Telefon</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Åtgärd</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
 
-// Spara bokning i LocalStorage
-function saveBooking() {
-    const date = document.getElementById("selectedDate").value;
-    const time = document.getElementById("timeInput").value;
+        bookings.forEach((b, index) => {
+            const statusText = b.cancelled ? "Avbokad" : "Aktiv";
+            const statusClass = b.cancelled ? "badge-cancelled" : "badge-active";
 
-    const slotId = `${date}-${time}`;
-    bookedSlots.push(slotId);
+            html += `
+                <tr>
+                    <td>${b.date}</td>
+                    <td>${b.time}</td>
+                    <td>${b.name}</td>
+                    <td>${b.phone}</td>
+                    <td>${b.email}</td>
+                    <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <button type="button" style="padding:6px 10px;font-size:12px;width:auto"
+                            onclick="cancelBooking(${index})">
+                            Avboka
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
 
-    localStorage.setItem("bookedSlots", JSON.stringify(bookedSlots));
-}
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
 
+    // Avboka – endast efter att tiden har passerat
+    function cancelBooking(index) {
+        const booking = bookings[index];
+        if (!booking || booking.cancelled) return;
+
+        const bookingDateTime = new Date(`${booking.date}T${booking.time}:00`);
+        const now = new Date();
+
+        if (now < bookingDateTime) {
+            alert("Du kan inte avboka förrän efter den bokade tiden har passerat.");
+            return;
+        }
+
+        if (!confirm(`Avboka tiden ${booking.date} kl ${booking.time} för ${booking.name}?`)) {
+            return;
+        }
+
+        booking.cancelled = true;
+        localStorage.setItem("bookings", JSON.stringify(bookings));
+
+        updateBookedTimes();
+        renderAdminPanel();
+    }
+
+    // Init
+    generateTimeSlots();
+    renderAdminPanel();
 </script>
 
 </body>
