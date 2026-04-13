@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="sv">
 <head>
@@ -151,17 +152,17 @@
     const timeInput = document.getElementById("timeInput");
     const timeSlotsContainer = document.getElementById("timeSlots");
 
-    // Stoppa gamla datum
     const today = new Date().toISOString().split("T")[0];
     datePicker.min = today;
 
-    // Bokningar i LocalStorage
     let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
 
-    // Lista över tider som ska vara lediga varje dag
-    const dailyFreeTimes = ["09:00", "09:30", "13:00", "13:30"];
+    // LEDIGA TIDER (grön)
+    const dailyFreeTimes = ["09:00", "13:00"];
 
-    // Generera tider automatiskt (09:00–15:30, var 30:e minut)
+    // ALLTID BOKADE TIDER (röd)
+    const alwaysTakenTimes = ["09:30", "13:30"];
+
     function generateTimeSlots() {
         timeSlotsContainer.innerHTML = "";
         const startHour = 9;
@@ -177,7 +178,10 @@
                 const span = document.createElement("span");
                 span.textContent = timeStr;
 
-                if (dailyFreeTimes.includes(timeStr)) {
+                if (alwaysTakenTimes.includes(timeStr)) {
+                    span.classList.add("taken");
+                    span.onclick = null;
+                } else if (dailyFreeTimes.includes(timeStr)) {
                     span.classList.add("free");
                     span.onclick = () => selectTime(timeStr);
                 } else {
@@ -190,7 +194,6 @@
         }
     }
 
-    // Uppdatera tider som är bokade för valt datum
     function updateBookedTimes() {
         const date = datePicker.value;
         const allTimes = document.querySelectorAll("#timeSlots span");
@@ -198,7 +201,11 @@
         allTimes.forEach(t => {
             const time = t.textContent;
 
-            if (dailyFreeTimes.includes(time)) {
+            if (alwaysTakenTimes.includes(time)) {
+                t.classList.remove("free");
+                t.classList.add("taken");
+                t.onclick = null;
+            } else if (dailyFreeTimes.includes(time)) {
                 t.classList.remove("taken");
                 t.classList.add("free");
                 t.onclick = () => selectTime(time);
@@ -212,6 +219,23 @@
         });
 
         if (!date) return;
+
+        const now = new Date();
+        const selectedDateObj = new Date(date);
+
+        if (selectedDateObj.toDateString() === now.toDateString()) {
+            allTimes.forEach(t => {
+                const time = t.textContent;
+                const [h, m] = time.split(":");
+                const timeObj = new Date(date + "T" + h + ":" + m + ":00");
+
+                if (timeObj < now) {
+                    t.classList.remove("free");
+                    t.classList.add("taken");
+                    t.onclick = null;
+                }
+            });
+        }
 
         const activeBookings = bookings.filter(b => !b.cancelled && b.date === date);
 
@@ -238,6 +262,11 @@
             return;
         }
 
+        if (alwaysTakenTimes.includes(time)) {
+            alert("Den här tiden är upptagen.");
+            return;
+        }
+
         const slotTaken = bookings.some(b => !b.cancelled && b.date === date && b.time === time);
         if (slotTaken) {
             alert("Den här tiden är redan bokad.");
@@ -256,13 +285,14 @@
     function handleSubmit() {
         const date = selectedDateInput.value;
         const time = timeInput.value;
-        const name = document.getElementById("nameInput").value;
-        const phone = document.getElementById("phoneInput").value;
-        const email = document.getElementById("emailInput").value;
-        const message = document.getElementById("messageInput").value;
 
         if (!date || !time) {
             alert("Välj datum och tid innan du bokar.");
+            return false;
+        }
+
+        if (alwaysTakenTimes.includes(time)) {
+            alert("Den här tiden är upptagen.");
             return false;
         }
 
@@ -275,10 +305,10 @@
         const booking = {
             date,
             time,
-            name,
-            phone,
-            email,
-            message,
+            name: document.getElementById("nameInput").value,
+            phone: document.getElementById("phoneInput").value,
+            email: document.getElementById("emailInput").value,
+            message: document.getElementById("messageInput").value,
             createdAt: new Date().toISOString(),
             cancelled: false
         };
