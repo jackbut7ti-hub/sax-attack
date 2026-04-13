@@ -110,9 +110,7 @@
     <input type="date" id="datePicker" required>
 
     <h2>Välj tid</h2>
-    <div class="times" id="timeSlots">
-        <!-- Tider genereras automatiskt via JavaScript -->
-    </div>
+    <div class="times" id="timeSlots"></div>
 
     <h2>Boka tid</h2>
     <form action="https://formspree.io/f/mlgarppj" method="POST" onsubmit="return handleSubmit()">
@@ -160,6 +158,9 @@
     // Bokningar i LocalStorage
     let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
 
+    // Lista över tider som ska vara lediga varje dag
+    const dailyFreeTimes = ["09:00", "09:30", "13:00", "13:30"];
+
     // Generera tider automatiskt (09:00–15:30, var 30:e minut)
     function generateTimeSlots() {
         timeSlotsContainer.innerHTML = "";
@@ -175,8 +176,14 @@
 
                 const span = document.createElement("span");
                 span.textContent = timeStr;
-                span.classList.add("free");
-                span.onclick = () => selectTime(timeStr);
+
+                if (dailyFreeTimes.includes(timeStr)) {
+                    span.classList.add("free");
+                    span.onclick = () => selectTime(timeStr);
+                } else {
+                    span.classList.add("taken");
+                    span.onclick = null;
+                }
 
                 timeSlotsContainer.appendChild(span);
             }
@@ -189,9 +196,19 @@
         const allTimes = document.querySelectorAll("#timeSlots span");
 
         allTimes.forEach(t => {
-            t.classList.remove("taken", "selected");
-            t.classList.add("free");
-            t.onclick = () => selectTime(t.textContent);
+            const time = t.textContent;
+
+            if (dailyFreeTimes.includes(time)) {
+                t.classList.remove("taken");
+                t.classList.add("free");
+                t.onclick = () => selectTime(time);
+            } else {
+                t.classList.remove("free");
+                t.classList.add("taken");
+                t.onclick = null;
+            }
+
+            t.classList.remove("selected");
         });
 
         if (!date) return;
@@ -208,13 +225,11 @@
         });
     }
 
-    // När datum ändras
     datePicker.addEventListener("change", function () {
         selectedDateInput.value = this.value;
         updateBookedTimes();
     });
 
-    // Välj tid
     function selectTime(time) {
         const date = datePicker.value;
 
@@ -238,7 +253,6 @@
         if (selected) selected.classList.add("selected");
     }
 
-    // Spara bokning + låt Formspree skicka mail
     function handleSubmit() {
         const date = selectedDateInput.value;
         const time = timeInput.value;
@@ -275,11 +289,9 @@
         updateBookedTimes();
         renderAdminPanel();
 
-        // Låt formuläret gå vidare till Formspree (return true)
         return true;
     }
 
-    // Adminpanel – visa bokningar
     function renderAdminPanel() {
         const container = document.getElementById("adminPanel");
 
@@ -330,7 +342,6 @@
         container.innerHTML = html;
     }
 
-    // Avboka – endast efter att tiden har passerat
     function cancelBooking(index) {
         const booking = bookings[index];
         if (!booking || booking.cancelled) return;
@@ -354,7 +365,6 @@
         renderAdminPanel();
     }
 
-    // Init
     generateTimeSlots();
     renderAdminPanel();
 </script>
